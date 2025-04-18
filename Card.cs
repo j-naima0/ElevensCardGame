@@ -8,6 +8,7 @@ namespace ElevensGame
         private string suit;
         private int rank;
         private int value;
+        private ConsoleColor cardColor;
 
         // Constructor
         public Card(string suit, int rank)
@@ -24,6 +25,11 @@ namespace ElevensGame
             {
                 this.value = rank;
             }
+            
+            // Set card color based on suit (new in second submission)
+            this.cardColor = (suit == "Hearts" || suit == "Diamonds") 
+                ? ConsoleColor.Red 
+                : ConsoleColor.Black;
         }
 
         // Methods
@@ -40,6 +46,18 @@ namespace ElevensGame
         public string GetSuit()
         {
             return this.suit;
+        }
+        
+        // New in second submission
+        public ConsoleColor GetColor()
+        {
+            return this.cardColor;
+        }
+        
+        // New in second submission
+        public bool IsFaceCard()
+        {
+            return rank > 10;
         }
 
         public override string ToString()
@@ -66,6 +84,56 @@ namespace ElevensGame
             }
             
             return $"{rankName} of {suit}";
+        }
+        
+        // New in second submission - get short card name for compact display
+        public string GetShortName()
+        {
+            string rankSymbol;
+            
+            switch (rank)
+            {
+                case 1:
+                    rankSymbol = "A";
+                    break;
+                case 10:
+                    rankSymbol = "T";
+                    break;
+                case 11:
+                    rankSymbol = "J";
+                    break;
+                case 12:
+                    rankSymbol = "Q";
+                    break;
+                case 13:
+                    rankSymbol = "K";
+                    break;
+                default:
+                    rankSymbol = rank.ToString();
+                    break;
+            }
+            
+            string suitSymbol;
+            switch (suit)
+            {
+                case "Hearts":
+                    suitSymbol = "♥";
+                    break;
+                case "Diamonds":
+                    suitSymbol = "♦";
+                    break;
+                case "Clubs":
+                    suitSymbol = "♣";
+                    break;
+                case "Spades":
+                    suitSymbol = "♠";
+                    break;
+                default:
+                    suitSymbol = suit[0].ToString();
+                    break;
+            }
+            
+            return $"{rankSymbol}{suitSymbol}";
         }
     }
 }

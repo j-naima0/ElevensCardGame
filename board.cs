@@ -23,24 +23,53 @@ namespace ElevensGame
         // Methods
         public void DisplayCards()
         {
-            StringBuilder display = new StringBuilder();
+            Console.WriteLine("\nCurrent Board:");
+            Console.WriteLine("-------------");
             
-            display.AppendLine("Current Board:");
-            display.AppendLine("-------------");
+            // Improved display format for second submission
+            // First row: positions
+            Console.Write("Position: ");
+            for (int i = 0; i < activeCards.Count; i++)
+            {
+                Console.Write($"{i + 1}  ");
+            }
+            Console.WriteLine();
             
+            // Second row: card display
+            Console.Write("Card:     ");
             for (int i = 0; i < activeCards.Count; i++)
             {
                 if (activeCards[i] != null)
                 {
-                    display.AppendLine($"{i + 1}: {activeCards[i]}");
+                    ConsoleColor originalColor = Console.ForegroundColor;
+                    Console.ForegroundColor = activeCards[i].GetColor();
+                    Console.Write($"{activeCards[i].GetShortName()} ");
+                    Console.ForegroundColor = originalColor;
                 }
                 else
                 {
-                    display.AppendLine($"{i + 1}: [Empty]");
+                    Console.Write("-- ");
+                }
+            }
+            Console.WriteLine("\n");
+            
+            // Detailed card information
+            for (int i = 0; i < activeCards.Count; i++)
+            {
+                if (activeCards[i] != null)
+                {
+                    ConsoleColor originalColor = Console.ForegroundColor;
+                    Console.ForegroundColor = activeCards[i].GetColor();
+                    Console.WriteLine($"{i + 1}: {activeCards[i]}");
+                    Console.ForegroundColor = originalColor;
+                }
+                else
+                {
+                    Console.WriteLine($"{i + 1}: [Empty]");
                 }
             }
             
-            Console.WriteLine(display.ToString());
+            Console.WriteLine();
         }
         
         public bool SelectCard(int cardIndex)
@@ -57,7 +86,8 @@ namespace ElevensGame
         {
             // Check if indices are valid
             if (card1Index < 0 || card1Index >= activeCards.Count ||
-                card2Index < 0 || card2Index >= activeCards.Count)
+                card2Index < 0 || card2Index >= activeCards.Count ||
+                card1Index == card2Index) // Added check for same card (second submission)
             {
                 return false;
             }
@@ -87,7 +117,8 @@ namespace ElevensGame
             // Check if indices are valid
             if (card1Index < 0 || card1Index >= activeCards.Count ||
                 card2Index < 0 || card2Index >= activeCards.Count ||
-                card3Index < 0 || card3Index >= activeCards.Count)
+                card3Index < 0 || card3Index >= activeCards.Count ||
+                card1Index == card2Index || card1Index == card3Index || card2Index == card3Index) // Added check for duplicates
             {
                 return false;
             }
@@ -203,6 +234,49 @@ namespace ElevensGame
             }
             
             return false;
+        }
+        
+        // New method for second submission - find a valid move
+        public List<int[]> FindValidMoves()
+        {
+            List<int[]> validMoves = new List<int[]>();
+            
+            // Find pairs that sum to 11
+            for (int i = 0; i < activeCards.Count; i++)
+            {
+                if (activeCards[i] == null) continue;
+                
+                for (int j = i + 1; j < activeCards.Count; j++)
+                {
+                    if (activeCards[j] == null) continue;
+                    
+                    if (IsValidPair(activeCards[i], activeCards[j]))
+                    {
+                        validMoves.Add(new int[] { i, j });
+                    }
+                }
+            }
+            
+            // Find J-Q-K sets
+            List<int> jackIndices = new List<int>();
+            List<int> queenIndices = new List<int>();
+            List<int> kingIndices = new List<int>();
+            
+            for (int i = 0; i < activeCards.Count; i++)
+            {
+                if (activeCards[i] == null) continue;
+                
+                if (activeCards[i].GetRank() == 11) jackIndices.Add(i);
+                if (activeCards[i].GetRank() == 12) queenIndices.Add(i);
+                if (activeCards[i].GetRank() == 13) kingIndices.Add(i);
+            }
+            
+            if (jackIndices.Count > 0 && queenIndices.Count > 0 && kingIndices.Count > 0)
+            {
+                validMoves.Add(new int[] { jackIndices[0], queenIndices[0], kingIndices[0] });
+            }
+            
+            return validMoves;
         }
     }
 }
